@@ -124,6 +124,22 @@ func GetAllEvents() (*models.EventList, error) {
 	return &event_list, nil
 }
 
+func GetFutureEvents() (*models.EventList, error) {
+	t := time.Now().Unix()
+	event_list, _ := GetAllEvents()
+	events := (*event_list).Events
+	future_list := []models.Event{}
+	for _, e := range(events) {
+		if e.StartTime > t {
+			future_list = append(future_list, e)
+		}
+	}
+	future_event_list := models.EventList {
+		Events: future_list,
+	}
+	return &future_event_list, nil
+}
+
 /*
 	Returns all the events
 */

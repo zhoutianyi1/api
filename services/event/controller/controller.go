@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+	// "time"
 
 	"github.com/HackIllinois/api/common/database"
 	"github.com/HackIllinois/api/common/errors"
@@ -23,6 +24,7 @@ func SetupController(route *mux.Route) {
 	metrics.RegisterHandler("/favorite/", AddEventFavorite, "POST", router)
 	metrics.RegisterHandler("/favorite/", RemoveEventFavorite, "DELETE", router)
 
+	metrics.RegisterHandler("/future/", GetFutureEvents, "GET", router)
 	metrics.RegisterHandler("/filter/", GetFilteredEvents, "GET", router)
 	metrics.RegisterHandler("/{id}/", GetEvent, "GET", router)
 	metrics.RegisterHandler("/{id}/", DeleteEvent, "DELETE", router)
@@ -55,6 +57,15 @@ func GetEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(event)
+}
+
+func GetFutureEvents(w http.ResponseWriter, r *http.Request) {
+	events, err := service.GetFutureEvents()
+	if err != nil {
+		errors.WriteError(w, r, errors.DatabaseError(err.Error(), "Could not get future events"))
+		return
+	}
+	json.NewEncoder(w).Encode(events)
 }
 
 /*
